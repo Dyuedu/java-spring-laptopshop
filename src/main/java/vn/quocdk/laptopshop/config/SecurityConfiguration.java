@@ -50,12 +50,12 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public AuthenticationSuccessHandler customSuccessAuthHandler(UserService userSerivce) {
-        return new CustomSuccessHandler(userSerivce);
+    public AuthenticationSuccessHandler customSuccessAuthHandler() {
+        return new CustomSuccessHandler();
     }
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http, UserService userService) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.INCLUDE)
@@ -78,7 +78,7 @@ public class SecurityConfiguration {
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
                         .failureUrl("/login?error")
-                        .successHandler(customSuccessAuthHandler(userService))
+                        .successHandler(customSuccessAuthHandler())
                         .permitAll())
                 .exceptionHandling(exception -> exception.accessDeniedPage("/access-denied"));
         return http.build();
