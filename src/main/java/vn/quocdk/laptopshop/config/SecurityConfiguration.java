@@ -53,29 +53,28 @@ public class SecurityConfiguration {
     public AuthenticationSuccessHandler customSuccessAuthHandler() {
         return new CustomSuccessHandler();
     }
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.INCLUDE)
                         .permitAll()
-                        .requestMatchers("/", "/products/**", "/register",
-                                "/login", "/client/**", "/css/**", "/js/**", "/product/**",
-                                "/images/**")
+                        .requestMatchers("/", "/login", "/client/**", "/css/**", "/js/**", "/images/**")
                         .permitAll()
-
                         .requestMatchers("/admin/**").hasRole("Admin")
-                        .requestMatchers("/shipper").hasRole("Shipper")
                         .anyRequest().authenticated())
                 .sessionManagement((sessionManagement) -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                         .invalidSessionUrl("/logout?expired")
                         .maximumSessions(1)
                         .maxSessionsPreventsLogin(false))
-                .logout(logout -> logout.deleteCookies("JSESSIONID").invalidateHttpSession(true))
-
-                .rememberMe((rememberMe) -> rememberMe
-                        .rememberMeServices(rememberMeServices()))
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .deleteCookies("JSESSIONID")
+                        .invalidateHttpSession(true))
+                // .rememberMe((rememberMe) -> rememberMe
+                // .rememberMeServices(rememberMeServices()))
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
                         .failureUrl("/login?error")

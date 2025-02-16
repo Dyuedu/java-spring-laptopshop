@@ -63,8 +63,7 @@
                                                     cssErrorClass="form-control is-invalid" path="password"/>
                                         <form:errors path="password" cssClass="invalid-feedback"/>
                                     </div>
-                                </div>
-
+                                </div> 
                                 <div class="row mb-3">
                                     <div class="col-md-6">
                                         <label class="form-label">Số điện thoại:</label>

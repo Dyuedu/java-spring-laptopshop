@@ -39,7 +39,7 @@ public class CartAPI {
 
     @PostMapping("/api/add-product-to-cart")
     public ResponseEntity<Integer> addProductToCart(
-            @RequestBody() CartRequest cartRequest,
+            @RequestBody CartRequest cartRequest,
             HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         String email = (String) session.getAttribute("email");
@@ -49,6 +49,4 @@ public class CartAPI {
         return ResponseEntity.ok().body(sum);
     }
 
-    
-    
 }

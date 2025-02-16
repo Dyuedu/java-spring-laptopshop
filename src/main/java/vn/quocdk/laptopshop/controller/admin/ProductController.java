@@ -61,9 +61,9 @@ public class ProductController {
 
     @PostMapping("/admin/product/create")
     public String postCreateProductPage(Model model,
-                                        @ModelAttribute("newProduct") @Valid Product product,
-                                        BindingResult bindingResult,
-                                        @RequestParam("imageFile") MultipartFile imageFile) {
+            @ModelAttribute("newProduct") @Valid Product product,
+            BindingResult bindingResult,
+            @RequestParam("imageFile") MultipartFile imageFile) {
         if (bindingResult.hasErrors()) {
             System.out.println(bindingResult.getAllErrors());
             return "admin/product/create";
@@ -75,6 +75,7 @@ public class ProductController {
     }
 
     @GetMapping("/admin/product/delete/{id}")
+    // admin/product/delete?id=1
     public String getDeleteProductPage(Model model, @PathVariable long id) {
         model.addAttribute("id", id);
         model.addAttribute("product", new Product());

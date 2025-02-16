@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 import java.util.List;
 
@@ -19,9 +18,10 @@ public class User {
     private long id;
     @Email(message = "Email không hợp lệ", regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
     private String email;
-    @NotNull
-    @Size(min = 6, message = "Mật khẩu phải có tối thiểu 6 ký tự")
+    
+    @NotNull(message = "không đuợc để trống")
     private String password;
+
     @NotEmpty(message = "Họ và tên không được để trống")
     private String fullName;
     @NotEmpty(message = "Địa chỉ không được để trống")
