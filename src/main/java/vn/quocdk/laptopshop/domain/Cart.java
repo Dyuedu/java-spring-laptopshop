@@ -8,7 +8,7 @@ import java.util.List;
 @Entity
 @Table(name = "carts")
 public class Cart {
-    // Cart Detail
+    // Cart Detail (1 - n)
     @OneToMany(mappedBy = "cart")
     List<CartDetail> cartDetails;
     @Id
