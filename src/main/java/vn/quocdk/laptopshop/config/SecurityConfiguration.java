@@ -16,6 +16,7 @@ import org.springframework.session.security.web.authentication.SpringSessionReme
 import vn.quocdk.laptopshop.service.CustomUserDetailsService;
 import vn.quocdk.laptopshop.service.UserService;
 
+// @EnableWebSecurity
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
