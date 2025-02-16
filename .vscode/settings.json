@@ -2,7 +2,7 @@
   "java.compile.nullAnalysis.mode": "automatic",
   "java.configuration.updateBuildConfiguration": "interactive",
   "sonarlint.connectedMode.project": {
-    "connectionId": "quocdkhe",
-    "projectKey": "quocdkhe_java-spring-laptopshop"
+    "connectionId": "dyuedu",
+    "projectKey": "Dyuedu_java-spring-laptopshop"
   }
 }
