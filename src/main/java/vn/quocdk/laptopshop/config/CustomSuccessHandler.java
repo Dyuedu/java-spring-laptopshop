@@ -24,8 +24,12 @@ import java.util.Map;
 public class CustomSuccessHandler implements
         AuthenticationSuccessHandler {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public CustomSuccessHandler(UserService userService) {
+        super();
+        this.userService = userService;
+    }
 
     protected String determineTargetUrl(final Authentication authentication) {
         Map<String, String> roleTargetUrlMap = new HashMap<>();
