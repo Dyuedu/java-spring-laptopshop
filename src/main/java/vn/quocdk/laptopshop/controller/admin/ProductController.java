@@ -12,7 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 import vn.quocdk.laptopshop.domain.Product;
 import vn.quocdk.laptopshop.service.FileService;
 import vn.quocdk.laptopshop.service.ProductService;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,6 +22,10 @@ public class ProductController {
 
     private final ProductService productService;
     private final FileService fileService;
+
+    private static final String PRODUCT_ATTR = "product";
+    private static final String PRODUCT_PAGE_REDIRECT = "redirect:/admin/product";
+    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     public ProductController(ProductService productService, FileService fileService) {
         this.productService = productService;
@@ -35,7 +40,7 @@ public class ProductController {
                 page = Integer.parseInt(pageOptional.get());
             }
         } catch (Exception e) {
-            // TODO: handle exception
+            page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, 5);
         Page<Product> productsRaw = productService.getAllProducts(pageable);
@@ -49,7 +54,7 @@ public class ProductController {
     @GetMapping("/admin/product/{id}")
     public String getProductDetailPage(@PathVariable long id, Model model) {
         Product product = productService.getProductById(id);
-        model.addAttribute("product", product);
+        model.addAttribute(PRODUCT_ATTR, product);
         return "admin/product/detail";
     }
 
@@ -65,56 +70,56 @@ public class ProductController {
             BindingResult bindingResult,
             @RequestParam("imageFile") MultipartFile imageFile) {
         if (bindingResult.hasErrors()) {
-            System.out.println(bindingResult.getAllErrors());
+            logger.error("Error: {}", bindingResult.getAllErrors());
             return "admin/product/create";
         }
-        String productImage = fileService.handleSaveUploadFile(imageFile, "product");
+        String productImage = fileService.handleSaveUploadFile(imageFile, PRODUCT_ATTR);
         product.setImage(productImage);
         productService.handleSaveProduct(product);
-        return "redirect:/admin/product";
+        return PRODUCT_PAGE_REDIRECT;
     }
 
     @GetMapping("/admin/product/delete/{id}")
     // admin/product/delete?id=1
     public String getDeleteProductPage(Model model, @PathVariable long id) {
         model.addAttribute("id", id);
-        model.addAttribute("product", new Product());
+        model.addAttribute(PRODUCT_ATTR, new Product());
         return "admin/product/delete";
     }
 
     @PostMapping("/admin/product/delete")
-    public String postDeleteProduct(Model model, @ModelAttribute("product") Product product) {
+    public String postDeleteProduct(Model model, @ModelAttribute(PRODUCT_ATTR) Product product) {
         Product toDelete = productService.getProductById(product.getId());
         String image = toDelete.getImage();
-        fileService.handleDeleteImage(image, "product");
+        fileService.handleDeleteImage(image, PRODUCT_ATTR);
         productService.deleteProductById(product.getId());
-        return "redirect:/admin/product";
+        return PRODUCT_PAGE_REDIRECT;
     }
 
     @GetMapping("/admin/product/update/{id}")
     public String getUpdateProductPage(Model model, @PathVariable long id) {
         Product currentProduct = productService.getProductById(id);
-        model.addAttribute("product", currentProduct);
+        model.addAttribute(PRODUCT_ATTR, currentProduct);
         return "admin/product/update";
     }
 
     @PostMapping("/admin/product/update")
     public String postUpdateProduct(
-            @ModelAttribute("product") @Valid Product product, BindingResult bindingResult,
+            @ModelAttribute(PRODUCT_ATTR) @Valid Product product, BindingResult bindingResult,
             @RequestParam("imageFile") MultipartFile imageFile) {
         if (bindingResult.hasErrors()) {
-            System.out.println(bindingResult.getAllErrors());
+            logger.error("Error: {}", bindingResult.getAllErrors());
             return "admin/product/update";
         }
 
         String currentImage = product.getImage();
         if (!imageFile.isEmpty()) {
-            fileService.handleDeleteImage(currentImage, "product");
-            String newImage = fileService.handleSaveUploadFile(imageFile, "product");
+            fileService.handleDeleteImage(currentImage, PRODUCT_ATTR);
+            String newImage = fileService.handleSaveUploadFile(imageFile, PRODUCT_ATTR);
             product.setImage(newImage);
         }
         productService.handleSaveProduct(product);
-        return "redirect:/admin/product";
+        return PRODUCT_PAGE_REDIRECT;
     }
 
 }

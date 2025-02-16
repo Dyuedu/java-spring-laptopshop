@@ -26,10 +26,12 @@ public class UserController {
     private final UserService userService;
     private final FileService fileService;
     private final PasswordEncoder passwordEncoder;
+    private static final String REDIRECT_USER_PAGE = "redirect:/admin/user";
+    private static final String AVATAR_FOLDE_STRING = "avatar";
 
     public UserController(
             FileService fileService,
-            UserService userService, ServletContext servletContext,
+            UserService userService,
             PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.fileService = fileService;
@@ -51,7 +53,7 @@ public class UserController {
                 page = Integer.parseInt(pageOptional.get());
             }
         } catch (Exception e) {
-            // TODO: handle exception
+            page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, 5);
         Page<User> usersRaw = this.userService.getAllUsers(pageable);
@@ -79,23 +81,23 @@ public class UserController {
 
     @PostMapping(value = "/admin/user/create")
     public String createUserPage(Model model,
-                                 @ModelAttribute("newUser") @Valid User user,
-                                 BindingResult newUserBindingResult,
-                                 @RequestParam("imageFile") MultipartFile file) {
+            @ModelAttribute("newUser") @Valid User user,
+            BindingResult newUserBindingResult,
+            @RequestParam("imageFile") MultipartFile file) {
 
         // validate
         if (newUserBindingResult.hasErrors()) {
             return "admin/user/create";
         }
 
-        String avatar = this.fileService.handleSaveUploadFile(file, "avatar");
+        String avatar = this.fileService.handleSaveUploadFile(file, AVATAR_FOLDE_STRING);
         String hashPassword = this.passwordEncoder.encode(user.getPassword());
         user.setAvatar(avatar);
         user.setPassword(hashPassword);
         user.setRole(this.userService.getRoleByName(user.getRole().getName()));
         // save user
         this.userService.handleSaveUser(user);
-        return "redirect:/admin/user";
+        return REDIRECT_USER_PAGE;
     }
 
     @RequestMapping("/admin/user/update/{id}") // GET
@@ -107,8 +109,8 @@ public class UserController {
 
     @PostMapping("/admin/user/update")
     public String postUpdateUser(Model model,
-                                 @ModelAttribute("user") User user,
-                                 @RequestParam("imageFile") MultipartFile file) {
+            @ModelAttribute("user") User user,
+            @RequestParam("imageFile") MultipartFile file) {
 
         User currentUser = userService.getUserById(user.getId());
 
@@ -119,13 +121,13 @@ public class UserController {
         if (!file.isEmpty()) {
             // Delete old avatar file
             String currentAvatar = currentUser.getAvatar();
-            fileService.handleDeleteImage(currentAvatar, "avatar");
-            String newAvatar = fileService.handleSaveUploadFile(file, "avatar");
+            fileService.handleDeleteImage(currentAvatar, AVATAR_FOLDE_STRING);
+            String newAvatar = fileService.handleSaveUploadFile(file, AVATAR_FOLDE_STRING);
             currentUser.setAvatar(newAvatar);
         }
         this.userService.handleSaveUser(currentUser);
 
-        return "redirect:/admin/user";
+        return REDIRECT_USER_PAGE;
     }
 
     @GetMapping("/admin/user/delete/{id}")
@@ -141,6 +143,6 @@ public class UserController {
         String avatar = toDelete.getAvatar();
         fileService.handleDeleteImage(avatar, "avatar");
         userService.deleteAUser(toDelete.getId());
-        return "redirect:/admin/user";
+        return REDIRECT_USER_PAGE;
     }
 }

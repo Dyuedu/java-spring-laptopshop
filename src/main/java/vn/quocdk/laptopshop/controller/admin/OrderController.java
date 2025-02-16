@@ -17,6 +17,7 @@ import java.util.Optional;
 public class OrderController {
 
     private final OrderService orderService;
+    private static final String ORDER = "order";
 
     public OrderController(OrderService orderService) {
         this.orderService = orderService;
@@ -30,7 +31,7 @@ public class OrderController {
                 page = Integer.parseInt(pageOptional.get());
             }
         } catch (Exception e) {
-            // TODO: handle exception
+            page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, 5);
         Page<Order> ordersRaw = orderService.getAllOrders(pageable);
@@ -45,7 +46,7 @@ public class OrderController {
     public String getUpdateOrderPage(@PathVariable long id, Model model) {
         long orderId = id;
         Order order = orderService.getOrderById(orderId);
-        model.addAttribute("order", order);
+        model.addAttribute(ORDER, order);
         return "admin/order/update";
     }
 
@@ -59,7 +60,7 @@ public class OrderController {
     public String getDeleteOrderPage(@PathVariable long id, Model model) {
         Order order = new Order();
         order.setId(id);
-        model.addAttribute("order", order);
+        model.addAttribute(ORDER, order);
         return "admin/order/delete";
     }
 
@@ -75,7 +76,7 @@ public class OrderController {
     public String getOrderInfoPage(Model model, @PathVariable long id) {
         long orderId = id;
         Order order = orderService.getOrderById(orderId);
-        model.addAttribute("order", order);
+        model.addAttribute(ORDER, order);
         return "admin/order/orderInfo";
     }
 

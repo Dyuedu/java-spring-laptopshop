@@ -4,7 +4,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -24,8 +23,12 @@ import java.util.Map;
 public class CustomSuccessHandler implements
         AuthenticationSuccessHandler {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public CustomSuccessHandler(UserService userService) {
+        super();
+        this.userService = userService;
+    }
 
     protected String determineTargetUrl(final Authentication authentication) {
         Map<String, String> roleTargetUrlMap = new HashMap<>();
@@ -43,8 +46,7 @@ public class CustomSuccessHandler implements
         throw new IllegalStateException();
     }
 
-    protected void clearAuthenticationAttributes(final Authentication authentication,
-            HttpSession session) {
+    protected void clearAuthenticationAttributes(HttpSession session) {
         if (session == null) {
             return;
         }
@@ -72,7 +74,7 @@ public class CustomSuccessHandler implements
             session.setAttribute("cartSum", user.getCart().getSum());
         }
         redirectStrategy.sendRedirect(request, response, targetUrl);
-        clearAuthenticationAttributes(authentication, session);
+        clearAuthenticationAttributes(session);
     }
 
 }
